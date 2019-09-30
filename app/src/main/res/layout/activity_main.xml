@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <com.glong.txtlib.view.TxtView
         android:id="@+id/txtView"
         android:layout_width="0dp"

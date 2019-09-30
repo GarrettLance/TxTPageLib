@@ -34,7 +34,15 @@ object TxtBreakUtil {
 
         while (dealSize < srcSize) {
             val isParagraphStart = result.isEmpty() || result.last().isParagraphEnd
-            val txtLine = getTxtLine(isParagraphStart, dealSize, src.substring(dealSize), measureWidth, padding, paint, marks)
+            val txtLine = getTxtLine(
+                isParagraphStart,
+                dealSize,
+                src.substring(dealSize),
+                measureWidth,
+                padding,
+                paint,
+                marks
+            )
             result.add(txtLine)
             dealSize += txtLine.validSize + txtLine.lineSymbol.length
         }
@@ -67,7 +75,8 @@ object TxtBreakUtil {
                 this.lineIndentationSymbol = indentationSymbol
             }
         }
-        val usableWidth = measureWidth - padding[0] - padding[2] - paint.measureText(txtLine.lineIndentationSymbol)
+        val usableWidth =
+            measureWidth - padding[0] - padding[2] - paint.measureText(txtLine.lineIndentationSymbol)
 
         var charIndex = 0
         var width = 0f// 已经测量的宽度
@@ -111,25 +120,38 @@ object TxtBreakUtil {
                 if (linkChar != null) {
                     linkChar.charWidth = paint.measureText(linkChar.char.toString())
                     txtLine.chars.add(linkChar)
-                    txtLine.surpassLength = usableWidth - (linkChar.charWidth + width + linkChar.paddingStart)//剩下这些长度是空的
+                    txtLine.surpassLength =
+                        usableWidth - (linkChar.charWidth + width + linkChar.paddingStart)//剩下这些长度是空的
                 } else {
                     txtChar.paddingEnd = 0f
                     txtChar.isCombinesEnd = false
                     txtLine.chars.add(txtChar)
-                    txtLine.surpassLength = usableWidth - (charWidth + width + charPaddingStart)//剩下这些长度是空的
+                    txtLine.surpassLength =
+                        usableWidth - (charWidth + width + charPaddingStart)//剩下这些长度是空的
                 }
                 break
             } else {
                 // 最后一个字符可能需要加的是链接符
                 val linkChar = maybeLinkChar(charIndex - 1, txtLine.last(), src)
-                if (linkChar != null) {
+
+                if (linkChar != null && txtLine.size >= 2) {
                     txtLine.lastOrNull()?.let {
                         width -= (it.charWidth + it.paddingStart + it.paddingEnd)
                     }
-                    linkChar.charWidth = paint.measureText(linkChar.char.toString())
-                    txtLine.chars[txtLine.lastIndex()] = linkChar // 替换最后一个字符
-                    //剩下这些长度是空的
-                    txtLine.surpassLength = usableWidth - (linkChar.charWidth + width + linkChar.paddingStart)
+                    // 倒数第二个
+                    val lastButOne = txtLine.chars[txtLine.size - 2]
+                    // 倒数第二个是英文
+                    if (lastButOne.charType() == CharType.ENGLISH) {
+                        linkChar.charWidth = paint.measureText(linkChar.char.toString())
+                        txtLine.chars[txtLine.lastIndex()] = linkChar // 替换最后一个字符
+                        //剩下这些长度是空的
+                        txtLine.surpassLength =
+                            usableWidth - (linkChar.charWidth + width + linkChar.paddingStart)
+                    } else {
+                        txtLine.chars.removeAt(txtLine.size - 1)
+                        lastButOne.paddingEnd = 0f
+                        txtLine.surpassLength = usableWidth - lastButOne.paddingEnd
+                    }
                 } else {
                     //剩下这些长度是空的
                     txtLine.surpassLength = usableWidth - width +
@@ -198,7 +220,8 @@ object TxtBreakUtil {
         if (combinesEndChars.isEmpty() && combinesStartChars.isEmpty()) {
             return
         }
-        val averageSurpassLength = txtLine.surpassLength / (combinesEndChars.size + combinesStartChars.size)
+        val averageSurpassLength =
+            txtLine.surpassLength / (combinesEndChars.size + combinesStartChars.size)
         combinesStartChars.forEach {
             it.paddingStart += averageSurpassLength
         }

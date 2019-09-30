@@ -11,6 +11,6 @@ class ChineseChar(c: Char) : TxtChar(c) {
     override var paddingEnd: Float = PADDING / 2
 
     companion object {
-        var PADDING = 10f
+        var PADDING = 4f
     }
 }

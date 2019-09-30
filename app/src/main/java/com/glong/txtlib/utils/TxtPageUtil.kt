@@ -48,7 +48,7 @@ object TxtPageUtil {
             val line = lines[index]
             when (index % maxLine) {
                 0 -> {
-                    page = TxtPage()
+                    page = TxtPage().apply { this.pageIndex = result.size }
                     y = padding[1].toFloat()
                     page.lines.add(line.apply {
                         this.lineTopSpace = 0f

@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.glong.txtdemo.Test.contentMixture
+import com.glong.txtlib.Test.contentMixture
 import com.glong.txtlib.entry.Mark
 import com.glong.txtlib.entry.TxtLine
 import com.glong.txtlib.entry.TxtPage
